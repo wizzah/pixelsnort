@@ -15,10 +15,10 @@
       this.a = a;
     }
 
-    var obj_list = function(flat_array) {
-      new_obj = [];
-
-      for(i = 0; i < flat_array.length; i += 4) {
+    function obj_list(flat_array) {
+      var new_obj = [];
+      var len = flat_array.length;
+      for(var i = 0; i < len; i += 4) {
         new_obj.push(new Pixel(
             flat_array[i],
             flat_array[i + 1],
@@ -28,15 +28,17 @@
       }
 
       return new_obj
-    };
+    }
 
     function imageLoaded(ev) {
         var element = document.getElementById("myCanvas");
         var c = element.getContext("2d");
 
         // read the width and height of the canvas
-        var width = element.width;
-        var height = element.height;
+        element.width = this.width;
+        element.height = this.height;
+        var width = this.width;
+        var height = this.height;
 
         // stamp the image on the left of the canvas:
         c.drawImage(im, 0, 0);
@@ -49,7 +51,6 @@
         //process
         // var new_pixelSequence = bubblesort(old_pixelSequence, "g");
         // imageData.data.set(unwrap(new_pixelSequence));
-
         var new_pixelSequence = channel_shuffle(old_pixelSequence, width);
         // var test = sort_some(new_pixelSequence);
         imageData.data.set(unwrap(new_pixelSequence));
@@ -74,18 +75,18 @@
 
     function channel_shuffle(list, width) {
 
-      var dark = [];
-      var light = [];
+      var dark =  {};
+      var light = {};
       sort_some(list, dark, light);
-      console.log(dark);
-      for(var i = 0; i < list.length-1; i++) {
+      var len = list.length;
+      for(var i = 0; i < len; i++) {
 
         //simple swap
-        if(i+3 < list.length) {
+        if(i+3 < len) {
           if(list[i].b > list[i+3].g) {
             var temp_var = list[i].b;
-            list[i].b = next_b;
-            var next_b = temp_var;
+            list[i].b = list[i+3].g;
+            list[i+3].g = temp_var;
           }
         }
 
@@ -111,29 +112,21 @@
         }
 
         //check if this pixel is in light/dark list
-        if(light.indexOf(list[i]) > -1) {
+        if(i in light) {
 
           list[i].r = 0;
-          if(i-15 > list.length) {
+          if(i-15 > len) {
             list[i-15].b = list[i+3].b + 35;
           }
-          //width is the boundary
-          // for(v = 0; v < width; v++) {
-          //   if (i+v < list.length) {
-          //     list[i+v].g = 0;
-          //   }
-          // }
-
         }
 
-        if(dark.indexOf(list[i]) > -1) {
+        else if(i in dark) {
           list[i].g = 255;
           list[i].r = 0;
           list[i].b += 25;
           //shift pixels
-          if(i-30 < list.length) {
+          if(i-30 < len) {
             list[i-30] = list[i];
-            // list[i+5] = list[i];
           }
         }
 
@@ -144,18 +137,18 @@
     function sort_some(list, dark, light) {
 
       //select pieces of the list based off of dark or lightness
-
-      for(var i = 0; i < list.length-1; i++) {
+      var len = list.length;
+      for(var i = 0; i < len-1; i++) {
 
         var bright = brightness(list[i].r,list[i].g,list[i].b);
         if(bright <= 100) {
-          light.push(list[i]);
+          light[i] = 1;
           // list[i].r = 50;
           // list[i].g = list[i].g + 40;
           // list[i].b = 255;
         }
         if(bright >= 200) {
-          dark.push(list[i]);
+          dark[i] = 1;
         }
 
       }
@@ -171,8 +164,8 @@
 
     function unwrap(data) {
       unwrapped_list = [];
-
-      for(var i = 0; i < data.length; i++) {
+      var len = data.length;
+      for(var i = 0; i < len; i++) {
         unwrapped_list.push(data[i].r);
         unwrapped_list.push(data[i].g);
         unwrapped_list.push(data[i].b);
@@ -185,8 +178,7 @@
 
     im = new Image();
     im.onload = imageLoaded;
-    im.src = "cat.png"; // code assumes this image is 200x200
-
+    im.src = "cat.jpg"; 
   };
   </script>
   <!-- http://code.tutsplus.com/tutorials/canvas-from-scratch-pixel-manipulation--net-20573 -->
