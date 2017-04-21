@@ -3,6 +3,8 @@ playing with channels and sorting pixels
 
 ![Image of bees](bees.jpg "Input") ![Image of bees with colors altered](bees_ex.png "Outuput")
 
+![Image of my cat](cat.jpg "Input") ![Image of my cat with colors altered](cat_ex.png "Outuput")
+
 
 Put it up on a server real quick or else you will get the dreaded cross-contamination error
 
